@@ -21,15 +21,27 @@ cd creative-react
 cp .env.dist .env
 ```
 
-4. Запустите коммпанду
+4. Запустите коммпанды
 
 ``` bash
+docker-compose run app npm npm install
+# или
+# make app-install
+
 docker-compose up -d
 # или
 # make up
 ```
 
 Приложение доступно по адресу [localhost:8080][1]
+
+## Сборка приложения
+
+``` bash
+docker-compose run app npm build
+# или
+# make build
+```
 
 ## Остановка приложения
 

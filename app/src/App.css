@@ -1,0 +1,18 @@
+
+.task_check, .important-btn, .task_remove {
+  cursor: pointer;
+  user-select: none;
+}
+
+.control-panel .badge {
+  cursor: pointer;
+}
+
+.control-panel {
+  user-select: none;
+}
+
+
+.important-level.active {
+  color: #f55;
+}

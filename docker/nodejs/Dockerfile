@@ -1,7 +1,9 @@
-FROM node:12-alpine
+FROM node:14-alpine
+
+COPY ./app /app
 
 WORKDIR /app
 
-RUN npm install -g light-server
+EXPOSE 3000
 
-ENTRYPOINT [ "light-server", "-s", "/app" ]
+CMD ["npm", "start"]
