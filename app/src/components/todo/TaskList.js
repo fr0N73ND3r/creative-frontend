@@ -1,29 +1,44 @@
-
-import { Component } from "react"
+import PropTypes from "prop-types"
 import Task from "./Task"
+import TaskModel from "../../Models/TaskModel"
 
-class TaskList extends Component {
-	constructor(props) {
-		super(props)
-	}
+function TaskList({
+  tasks,
+  handleToggleImportant,
+  handleToggleTask,
+  handleRemoveTask,
+}) {
+  if (!tasks) {
+    return null
+  }
+  return (
+    <div>
+      {
+        tasks.map(
+          (task) => (
+            <Task
+              key={task.id.toString()}
+              task={task}
+              handleRemoveTask={handleRemoveTask}
+              handleToggleTask={handleToggleTask}
+              handleToggleImportant={handleToggleImportant}
+            />
+          ),
+        )
+      }
+    </div>
+  )
+}
 
-	render() {
-		return (
-			<div>
-				{
-					this.props.tasks.map(
-						task => <Task
-							key={task.id.toString()}
-							task={task}
-							toggleTask={this.props.toggleTask}
-							removeTask={this.props.removeTask}
-							toggleImportant={this.props.toggleImportant}
-						></Task>
-					)
-				}
-			</div>
-		);
-	}
+TaskList.defaultProps = {
+  tasks: [],
+}
+
+TaskList.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.instanceOf(TaskModel)),
+  handleToggleImportant: PropTypes.func.isRequired,
+  handleToggleTask: PropTypes.func.isRequired,
+  handleRemoveTask: PropTypes.func.isRequired,
 }
 
 export default TaskList

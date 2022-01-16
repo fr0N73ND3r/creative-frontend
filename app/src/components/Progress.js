@@ -1,17 +1,23 @@
+import PropTypes from "prop-types"
 
-import { Component } from "react";
+function Progress({
+  current,
+  total,
+}) {
+  const percent = !current || !total
+    ? 0
+    : (current * 100) / total
 
-export default class Progress extends Component {
-
-	render() {
-		const percent = !this.props.current || !this.props.total
-			? 0
-			: this.props.current*100/this.props.total
-
-		return (
-			<div className="progress">
-				<div className="progress-bar" role="progressbar" style={{width: percent + '%'}}></div>
-			</div>
-		)
-	}
+  return (
+    <div className="progress">
+      <div className="progress-bar" style={{ width: `${percent}%` }} />
+    </div>
+  )
 }
+
+Progress.propTypes = {
+  current: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+}
+
+export default Progress

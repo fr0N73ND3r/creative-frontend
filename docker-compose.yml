@@ -9,4 +9,4 @@ services:
     volumes:
       - "./app:/app"
     ports:
-      - "${APP_PORT}:3000"
+      - "3000:3000"

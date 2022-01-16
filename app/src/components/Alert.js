@@ -1,13 +1,20 @@
-import { Component } from "react";
+import PropTypes from "prop-types"
 
-export default class Alert extends Component {
-
-	render()
-	{
-		return (
-			<div className={`alert alert-${this.props.type || "info"}`}>
-				{this.props.children}
-			</div>
-		)
-	}
+function Alert({
+  type,
+  children,
+}) {
+  return <div className={`alert alert-${type}`}>{children}</div>
 }
+
+Alert.defaultProps = {
+  type: "info",
+  children: "",
+}
+
+Alert.propTypes = {
+  type: PropTypes.string,
+  children: PropTypes.node,
+}
+
+export default Alert

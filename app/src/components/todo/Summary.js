@@ -1,55 +1,69 @@
+import PropTypes from "prop-types"
+import Progress from "../Progress"
+import TaskModel, { IMPORTANT_LOW, IMPORTANT_MEDIUM, IMPORTANT_HIGHT } from "../../Models/TaskModel"
 
-import {Component} from "react";
-import Progress from "../Progress";
+function Summary({
+  tasks,
+}) {
+  const totalCount = tasks.length
+  const active = tasks.filter((task) => !task.done)
+  const complete = tasks.filter((task) => task.done)
+  const impHight = tasks.filter((task) => task.important === IMPORTANT_HIGHT)
+  const impMedium = tasks.filter((task) => task.important === IMPORTANT_MEDIUM)
+  const impLow = tasks.filter((task) => task.important === IMPORTANT_LOW)
 
-class Summary extends Component {
+  return (
+    <div>
+      <h1>Summary</h1>
+      <br />
+      <div>
+        Total tasks:
+        {" "}
+        {totalCount}
+      </div>
+      <br />
+      <div>
+        Active tasks:
+        {" "}
+        {active.length}
+        <Progress current={active.length} total={totalCount} />
+      </div>
+      <br />
+      <div>
+        Completed tasks:
+        {" "}
+        {complete.length}
+        <Progress current={complete.length} total={totalCount} />
+      </div>
+      <br />
+      <h4>Important</h4>
+      <br />
+      <div>
+        Hight important tasks:
+        {" "}
+        {impHight.length}
+        <Progress current={impHight.length} total={totalCount} />
+      </div>
+      <br />
+      <div>
+        Medium important tasks:
+        {" "}
+        {impMedium.length}
+        <Progress current={impMedium.length} total={totalCount} />
+      </div>
+      <br />
+      <div>
+        Low important tasks:
+        {" "}
+        {impLow.length}
+        <Progress current={impLow.length} total={totalCount} />
+      </div>
+    </div>
+  )
+}
 
-	render()
-	{
-		const totalCount = this.props.tasks.length
-		const active = this.props.tasks.filter(task => !task.done)
-		const complete = this.props.tasks.filter(task => task.done)
-		const impHight = this.props.tasks.filter(task => task.important === 3)
-		const impMedium = this.props.tasks.filter(task => task.important === 2)
-		const impLow = this.props.tasks.filter(task => task.important === 1)
-
-		return (
-			<div>
-				<h1>Summary</h1>
-				<br/>
-				<div>
-						Total tasks: {totalCount}
-				</div>
-				<br/>
-				<div>
-						Active tasks: {active.length}
-						<Progress current={active.length} total={totalCount}></Progress>
-				</div>
-				<br/>
-				<div>
-						Completed tasks: {complete.length}
-						<Progress current={complete.length} total={totalCount}></Progress>
-				</div>
-				<br/>
-				<h4>Important</h4>
-				<br/>
-				<div>
-						Hight important tasks: {impHight.length}
-						<Progress current={impHight.length} total={totalCount}></Progress>
-				</div>
-				<br/>
-				<div>
-						Medium important tasks: {impMedium.length}
-						<Progress current={impMedium.length} total={totalCount}></Progress>
-				</div>
-				<br/>
-				<div>
-						Low important tasks: {impLow.length}
-						<Progress current={impLow.length} total={totalCount}></Progress>
-				</div>
-			</div>
-		)
-	}
+Summary.propTypes = {
+  tasks: PropTypes.arrayOf(PropTypes.instanceOf(TaskModel)).isRequired,
 }
 
 export default Summary

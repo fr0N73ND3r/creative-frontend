@@ -1,180 +1,156 @@
-import { Component } from "react";
+import { Component } from "react"
+
+import { byCreatedAtDesc } from "../../Utils/SortConditions"
 import TaskList from "./TaskList"
-import TaskForm from "./TaskForm";
-import Summary from "./Summary";
-import ControlPanel from "./ControlPanel";
-import Alert from "../Alert";
-import { nanoid } from "nanoid"
+import TaskForm from "./TaskForm"
+import Summary from "./Summary"
+import ControlPanel from "./ControlPanel"
+import Alert from "../Alert"
+import TaskData from "../../Mock/Tasks"
+import TaskModel from "../../Models/TaskModel"
 
-function byCreatedAt(a, b) {
-	return b.createdAt - a.createdAt;
-}
-
-const tasks = [
-	{
-		"id": nanoid(),
-		"title": "First task",
-		"done": true,
-		"createdAt": Date.now(),
-		"important": 0
-	},
-	{
-		"id": nanoid(),
-		"title": "Second task",
-		"done": false,
-		"createdAt": Date.now() + 1,
-		"important": 2
-	},
-];
-
+/**
+ * Компонент менеджера задач
+ */
 class TaskManager extends Component {
-	constructor(props) {
-		super(props)
-		this.createTask = this.createTask.bind(this)
-		this.removeTask = this.removeTask.bind(this)
-		this.toggleTask = this.toggleTask.bind(this)
-		this.toggleImportant = this.toggleImportant.bind(this)
-		this.handleShowActive = this.handleShowActive.bind(this)
-		this.handleShowCompleted = this.handleShowCompleted.bind(this)
-		this.addError = this.addError.bind(this)
-		this.clearError = this.clearError.bind(this)
+  constructor(props) {
+    super(props)
+    this.createTask = this.createTask.bind(this)
+    this.removeTask = this.removeTask.bind(this)
+    this.toggleTask = this.toggleTask.bind(this)
+    this.toggleImportant = this.toggleImportant.bind(this)
+    this.handleShowActive = this.handleShowActive.bind(this)
+    this.handleShowCompleted = this.handleShowCompleted.bind(this)
+    this.addError = this.addError.bind(this)
+    this.clearError = this.clearError.bind(this)
 
-		this.state = {
-			"tasks": tasks,
-			"showActive": true,
-			"showCompleted": true,
-			"error": null
-		}
-	}
+    this.state = {
+      tasks: [],
+      showActive: true,
+      showCompleted: true,
+      error: null,
+    }
+  }
 
-	updateTask(id, callback) {
-		this.setState(function (state) {
-			const task = state.tasks.find(element => element.id === id)
-			const tasks = state.tasks.filter(task => task.id !== id)
+  componentDidMount() {
+    TaskData.map((data) => this.createTask(data))
+  }
 
-			const newTask = callback(task, state)
+  handleShowActive() {
+    this.setState((state) => ({
+      showActive: !state.showActive,
+    }))
+  }
 
-			return { "tasks": [newTask, ...tasks] }
-		})
-	}
+  handleShowCompleted() {
+    this.setState((state) => ({
+      showCompleted: !state.showCompleted,
+    }))
+  }
 
-	removeTask(id) {
-		this.setState(function (state) {
-			const tasks = state.tasks.filter(task => task.id !== id)
+  toggleTask(id) {
+    this.updateTask(id, (task) => new TaskModel({ ...task, done: !task.done }))
+  }
 
-			return { "tasks": tasks }
-		})
-	}
+  toggleImportant(id) {
+    this.updateTask(id, (task) => new TaskModel({ ...task, important: (task.important + 1) % 4 }))
+  }
 
-	createTask(data) {
-		data = {
-			...data,
-			"id": nanoid(),
-			"createdAt": Date.now(),
-			"important": 0
-		}
+  createTask(data) {
+    const { tasks } = this.state
+    const newTask = new TaskModel(data)
+    const existTask = tasks.findIndex(
+      (task) => task.title.toLowerCase() === newTask.title.toLowerCase(),
+    )
+    if (existTask !== -1) {
+      this.addError(`Task "${data.title}" already exist`)
+      return
+    }
+    this.setState(() => ({ tasks: [newTask, ...tasks] }))
+  }
 
-		const existTask = this.state.tasks.findIndex(task => task.title === data.title)
-		if (existTask !== -1) {
-			this.addError(`Task "${data.title}" already exist`)
-			return;
-		}
+  removeTask(id) {
+    this.setState((state) => {
+      const newTasks = state.tasks.filter((task) => task.id !== id)
 
-		this.setState(function (state) {
-			return { "tasks": [data, ...state.tasks] };
-		})
-	}
+      return { tasks: [...newTasks] }
+    })
+  }
 
-	toggleTask(id) {
-		this.updateTask(id, task => {
-			return {
-				...task,
-				"done": !task.done
-			}
-		})
-	}
-	toggleImportant(id) {
-		this.updateTask(id, task => {
-			return {
-				...task,
-				"important": (task.important + 1) % 4
-			}
-		})
-	}
+  updateTask(id, callback) {
+    this.setState((state) => {
+      const { tasks } = state
+      const existTask = tasks.find((element) => element.id === id)
+      const filteredTasks = tasks.filter((task) => task.id !== id)
+      const newTask = callback(existTask, state)
 
-	handleShowActive() {
-		this.setState(state => {
-			return {
-				"showActive": !state.showActive
-			}
-		})
-	}
-	handleShowCompleted() {
-		this.setState(state => {
-			return {
-				"showCompleted": !state.showCompleted
-			}
-		})
-	}
+      return { tasks: [newTask, ...filteredTasks] }
+    })
+  }
 
-	addError(error) {
-		this.setState(() => { return { "error": error } })
-		setTimeout(this.clearError, 5000)
-	}
+  addError(error) {
+    this.setState(() => ({ error }))
+    setTimeout(this.clearError, 5000)
+  }
 
-	clearError() {
-		this.setState(() => { return { "error": null } })
-	}
+  clearError() {
+    this.setState(() => ({ error: null }))
+  }
 
-	render() {
-		let {tasks} = this.state
-		let totalTasks = [];
+  render() {
+    const {
+      tasks, showActive, showCompleted, error,
+    } = this.state
+    let totalTasks = []
 
-		if (this.state.showActive) {
-			totalTasks = [...totalTasks, ...tasks.filter(task => !task.done).sort(byCreatedAt)]
-		}
+    // console.log(tasks)
+    if (showActive) {
+      totalTasks = [...totalTasks, ...tasks.filter((task) => !task.done).sort(byCreatedAtDesc)]
+    }
 
-		if (this.state.showCompleted) {
-			totalTasks = [...totalTasks, ...tasks.filter(task => task.done).sort(byCreatedAt)]
-		}
+    if (showCompleted) {
+      totalTasks = [...totalTasks, ...tasks.filter((task) => task.done).sort(byCreatedAtDesc)]
+    }
 
-		let errorAlert = null
-		if (this.state.error !== null) {
-			errorAlert = <div><Alert type="danger">{this.state.error}</Alert><br /></div>
-		}
+    let errorAlert = null
+    if (error !== null) {
+      errorAlert = (
+        <div>
+          <Alert type="danger">{error}</Alert>
+          <br />
+        </div>
+      )
+    }
 
-		return (
-			<div className="task-manager container">
-				<div className="row">
-					<div className="col-md-6">
-						<TaskForm
-							createTask={this.createTask}>
-						</TaskForm>
-						<br />
-						<ControlPanel
-							showActive={this.state.showActive}
-							showCompleted={this.state.showCompleted}
-							showActiveHandler={this.handleShowActive}
-							showCompletedHandler={this.handleShowCompleted}
-						></ControlPanel>
-						<br />
-						{errorAlert}
-						<TaskList
-							tasks={totalTasks}
-							toggleTask={this.toggleTask}
-							removeTask={this.removeTask}
-							toggleImportant={this.toggleImportant}
-						>
-						</TaskList>
-					</div>
-					<div className="col-md-6">
-						<Summary tasks={this.state.tasks}></Summary>
-					</div>
-				</div>
+    return (
+      <div className="task-manager container">
+        <div className="row">
+          <div className="col-md-6">
+            <TaskForm createTask={this.createTask} />
+            <br />
+            <ControlPanel
+              showActive={showActive}
+              showCompleted={showCompleted}
+              showActiveHandler={this.handleShowActive}
+              showCompletedHandler={this.handleShowCompleted}
+            />
+            <br />
+            {errorAlert}
+            <TaskList
+              tasks={totalTasks}
+              handleToggleTask={this.toggleTask}
+              handleRemoveTask={this.removeTask}
+              handleToggleImportant={this.toggleImportant}
+            />
+          </div>
+          <div className="col-md-6">
+            <Summary tasks={tasks} />
+          </div>
+        </div>
 
-			</div>
-		)
-	}
+      </div>
+    )
+  }
 }
 
 export default TaskManager

@@ -1,12 +1,22 @@
-import { Children, Component } from "react"
+import PropTypes from "prop-types"
 
-export default class ToggleBadge extends Component {
-	render() {
-		const { handler, status } = this.props
-		return (
-			<span onClick={handler} className={`badge ${status ? " badge-success" : " badge-primary"}`}>
-				{this.props.children}
-			</span>
-		)
-	}
+function ToggleBadge({
+  children,
+  status,
+  handler,
+}) {
+  const statusClass = status ? " badge-success" : " badge-primary"
+  return (
+    <div role="button" onClick={handler} onKeyPress={handler} className={`badge ${statusClass}`} tabIndex="0">
+      {children}
+    </div>
+  )
 }
+
+ToggleBadge.propTypes = {
+  children: PropTypes.node.isRequired,
+  status: PropTypes.bool.isRequired,
+  handler: PropTypes.func.isRequired,
+}
+
+export default ToggleBadge

@@ -33,7 +33,7 @@ docker-compose up -d
 # make up
 ```
 
-Приложение доступно по адресу [localhost:8080][1]
+Приложение доступно по адресу [localhost:3000][1]
 
 ## Сборка приложения
 
@@ -45,7 +45,7 @@ docker-compose run app npm build
 
 ## Остановка приложения
 
-1. Запустите коммпанду
+1. Запустите команду
 
 ``` bash
 docker-compose down --remove-orphans
@@ -53,4 +53,4 @@ docker-compose down --remove-orphans
 # make down
 ```
 
-[1]: http://localhost:8080
+[1]: http://localhost:3000

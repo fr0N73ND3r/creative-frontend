@@ -1,27 +1,37 @@
-import { Component } from "react";
-import ToggleBadge from "./TaggleBadge";
-import ImportantControl from "./ImportantControl";
+import PropTypes from "prop-types"
+import ToggleBadge from "./TaggleBadge"
 
-export default class ControlPanel extends Component {
-	render() {
-		return (
-			<div className="control-panel row">
-				<div className="col">
-					Show:
-					<ToggleBadge
-						status={this.props.showActive}
-						handler={this.props.showActiveHandler}
-					>
-						Active
-					</ToggleBadge>
-					<ToggleBadge
-						status={this.props.showCompleted}
-						handler={this.props.showCompletedHandler}
-					>
-						Completed
-					</ToggleBadge>
-				</div>
-			</div>
-		)
-	}
+function ControlPanel({
+  showActive,
+  showActiveHandler,
+  showCompleted,
+  showCompletedHandler,
+}) {
+  return (
+    <div className="control-panel row">
+      <div className="col">
+        Show:
+        <ToggleBadge status={showActive} handler={showActiveHandler}>
+          Active
+        </ToggleBadge>
+        <ToggleBadge status={showCompleted} handler={showCompletedHandler}>
+          Completed
+        </ToggleBadge>
+      </div>
+    </div>
+  )
 }
+
+ControlPanel.defaultProps = {
+  showActive: true,
+  showCompleted: true,
+}
+
+ControlPanel.propTypes = {
+  showActive: PropTypes.bool,
+  showActiveHandler: PropTypes.func.isRequired,
+  showCompleted: PropTypes.bool,
+  showCompletedHandler: PropTypes.func.isRequired,
+}
+
+export default ControlPanel

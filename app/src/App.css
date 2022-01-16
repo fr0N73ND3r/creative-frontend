@@ -16,3 +16,7 @@
 .important-level.active {
   color: #f55;
 }
+
+label {
+  display: block;
+}
