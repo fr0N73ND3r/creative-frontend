@@ -1,6 +1,7 @@
 import { Component } from "react"
 
 import { byCreatedAtDesc } from "../../Utils/SortConditions"
+import { activeTaskFilter, completedTaskFilter } from "../../Utils/Comparators"
 import TaskList from "./TaskList"
 import TaskForm from "./TaskForm"
 import Summary from "./Summary"
@@ -21,7 +22,7 @@ class TaskManager extends Component {
     this.toggleImportant = this.toggleImportant.bind(this)
     this.handleShowActive = this.handleShowActive.bind(this)
     this.handleShowCompleted = this.handleShowCompleted.bind(this)
-    this.addError = this.addError.bind(this)
+    this.createError = this.createError.bind(this)
     this.clearError = this.clearError.bind(this)
 
     this.state = {
@@ -57,16 +58,19 @@ class TaskManager extends Component {
   }
 
   createTask(data) {
-    const { tasks } = this.state
-    const newTask = new TaskModel(data)
-    const existTask = tasks.findIndex(
-      (task) => task.title.toLowerCase() === newTask.title.toLowerCase(),
-    )
-    if (existTask !== -1) {
-      this.addError(`Task "${data.title}" already exist`)
-      return
-    }
-    this.setState(() => ({ tasks: [newTask, ...tasks] }))
+    this.setState((state) => {
+      const { tasks } = state
+      const newTask = new TaskModel(data)
+
+      const existTask = tasks.findIndex(
+        (task) => task.title.toLowerCase() === newTask.title.toLowerCase(),
+      )
+      if (existTask !== -1) {
+        return { error: `Task "${data.title}" already exist` }
+      }
+
+      return { tasks: [newTask, ...tasks] }
+    })
   }
 
   removeTask(id) {
@@ -88,9 +92,20 @@ class TaskManager extends Component {
     })
   }
 
-  addError(error) {
-    this.setState(() => ({ error }))
-    setTimeout(this.clearError, 5000)
+  createError(message) {
+    if (message === null) {
+      return null
+    }
+
+    clearTimeout(this.timerId)
+    this.timerId = setTimeout(this.clearError, 5000)
+
+    return (
+      <div>
+        <Alert type="danger">{message}</Alert>
+        <br />
+      </div>
+    )
   }
 
   clearError() {
@@ -101,26 +116,11 @@ class TaskManager extends Component {
     const {
       tasks, showActive, showCompleted, error,
     } = this.state
-    let totalTasks = []
 
-    // console.log(tasks)
-    if (showActive) {
-      totalTasks = [...totalTasks, ...tasks.filter((task) => !task.done).sort(byCreatedAtDesc)]
-    }
-
-    if (showCompleted) {
-      totalTasks = [...totalTasks, ...tasks.filter((task) => task.done).sort(byCreatedAtDesc)]
-    }
-
-    let errorAlert = null
-    if (error !== null) {
-      errorAlert = (
-        <div>
-          <Alert type="danger">{error}</Alert>
-          <br />
-        </div>
-      )
-    }
+    const totalTasks = [
+      ...(showActive ? tasks.filter(activeTaskFilter).sort(byCreatedAtDesc) : []),
+      ...(showCompleted ? tasks.filter(completedTaskFilter).sort(byCreatedAtDesc) : []),
+    ]
 
     return (
       <div className="task-manager container">
@@ -135,7 +135,7 @@ class TaskManager extends Component {
               showCompletedHandler={this.handleShowCompleted}
             />
             <br />
-            {errorAlert}
+            {this.createError(error)}
             <TaskList
               tasks={totalTasks}
               handleToggleTask={this.toggleTask}

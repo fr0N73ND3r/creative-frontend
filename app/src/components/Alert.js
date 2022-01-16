@@ -4,12 +4,12 @@ function Alert({
   type,
   children,
 }) {
-  return <div className={`alert alert-${type}`}>{children}</div>
+  return children && <div className={`alert alert-${type}`}>{children}</div>
 }
 
 Alert.defaultProps = {
   type: "info",
-  children: "",
+  children: null,
 }
 
 Alert.propTypes = {
