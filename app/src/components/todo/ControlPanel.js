@@ -1,5 +1,5 @@
 import PropTypes from "prop-types"
-import ToggleBadge from "./TaggleBadge"
+import ToggleBadge from "./ToggleBadge"
 
 function ControlPanel({
   showActive,

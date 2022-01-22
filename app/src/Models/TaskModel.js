@@ -30,6 +30,12 @@ export default class TaskModel {
   get id() {
     return this.#id
   }
+
+  toggle() {
+    this.done = !this.done
+
+    return this
+  }
 }
 
 export {

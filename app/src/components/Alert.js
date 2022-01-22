@@ -1,9 +1,6 @@
 import PropTypes from "prop-types"
 
-function Alert({
-  type,
-  children,
-}) {
+function Alert({ type, children }) {
   return children && <div className={`alert alert-${type}`}>{children}</div>
 }
 
